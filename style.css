@@ -1,0 +1,46 @@
+<?php
+
+// Array med alla stationer längs tåglinje 19
+$linje19 = ['Hagsätra', 'Rågsved', 'Högdalen', 'Bandhagen', 'Stureby', 'Svedmyra', 'Sockenplan', 
+            'Enskede Gård', 'Globen', 'Gullmarsplan', 'Skanstull', 'Medborgarplatsen', 'Slussen', 
+            'Gamla Stan', 'T-Centralen', 'Hötorget', 'Rådmansgatan', 'Odenplan', 'S:T Eriksplan', 
+            'Fridhemsplan', 'Thorildsplan', 'Kristineberg', 'Alvik', 'Stora Mossen', 'Abrahamsberg', 
+            'Brommaplan', 'Åkeshov', 'Ängbyplan', 'Islandstorget', 'Blackeberg', 'Råcksta', 
+            'Vällingby', 'Johannelund', 'Hässelby Gård', 'Hässelby Strand'];
+
+// Funktion för att beräkna restid och ankomsttid
+function calculateJourney($from, $to) {
+    global $linje19;
+    
+    // Hitta index för avresestation och destination
+    $fromIndex = array_search($from, $linje19);
+    $toIndex = array_search($to, $linje19);
+    
+    // Beräkna antal stationer mellan avresestation och destination
+    $stationsBetween = abs($toIndex - $fromIndex);
+    
+    // Beräkna restiden i minuter baserat på antalet stationer och 3 min per station
+    $journeyTime = $stationsBetween * 3;
+    
+    // Förväntad ankomsttid till destinationen
+    $currentTime = time();
+    $arrivalTime = date("H:i", $currentTime + ($journeyTime * 60));
+    
+    return array($stationsBetween, $journeyTime, $arrivalTime);
+}
+
+// Hantera formuläret när det skickas
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    $fromStation = $_POST["from_station"];
+    $toStation = $_POST["to_station"];
+    
+    // Beräkna restid och ankomsttid
+    list($stationsBetween, $journeyTime, $arrivalTime) = calculateJourney($fromStation, $toStation);
+    
+    // Visa resultat
+    echo "Antal stationer mellan $fromStation och $toStation: $stationsBetween<br>";
+    echo "Beräknad restid: $journeyTime minuter<br>";
+    echo "Förväntad ankomsttid till $toStation: $arrivalTime";
+}
+
+?>
